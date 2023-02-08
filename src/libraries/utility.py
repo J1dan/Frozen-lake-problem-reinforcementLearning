@@ -50,21 +50,22 @@ def sarsa(reward_map, actions, num_episodes, discount_factor, learning_rate, eps
     Q = np.zeros((4, 4, 4))
     for episode in range(num_episodes):
         state = (0, 0)
-        if np.random.rand() < epsilon:
-            action = np.random.choice(actions)
-        else:
-            action = actions[np.argmax(Q[state[0], state[1]])]
-        # while state != (3, 3):
         while state != (3, 3) and state !=(1, 1) and state !=(1, 3) and state !=(3, 1) and state !=(2, 3):
+            if np.random.rand() < epsilon:
+                action = np.random.choice(actions)
+            else:
+                action = actions[np.argmax(Q[state[0], state[1]])]
             next_state = transition(state, action)
             reward = reward_map[next_state[0], next_state[1]]
             if np.random.rand() < epsilon:
                 next_action = np.random.choice(actions)
             else:
                 next_action = actions[np.argmax(Q[next_state[0], next_state[1]])]
-            Q[state[0], state[1], actions.index(action)] += learning_rate * (reward + discount_factor * Q[next_state[0], next_state[1], actions.index(next_action)] - Q[state[0], state[1], actions.index(action)])
+            Q[state[0], state[1], actions.index(action)] += learning_rate * \
+                (reward + discount_factor * Q[next_state[0], next_state[1], actions.index(next_action)] \
+                - Q[state[0], state[1], actions.index(action)])
             state = next_state
-            action = next_action
+            # action = next_action
     return Q
 
 # Define the Q-learning with an ε-greedy behavior policy
@@ -76,11 +77,22 @@ def q_learning(reward_map, actions, num_episodes, discount_factor, learning_rate
             if np.random.rand() < epsilon:
                 action = np.random.choice(actions)
             else:
+                # if np.allclose(Q[state[0], state[1]],Q[0,0,0]):
+                # #     if np.random.rand() < 0.5:
+                # #         action = 'right'
+                # #     else:
+                # #         action = 'down'
+                #     action = np.random.choice(actions)
+                # else:
                 action = actions[np.argmax(Q[state[0], state[1]])]
             next_state = transition(state, action)
             reward = reward_map[next_state[0], next_state[1]]
-            Q[state[0], state[1], actions.index(action)] += learning_rate * (reward + discount_factor * np.max(Q[next_state[0], next_state[1]]) - Q[state[0], state[1], actions.index(action)])
+            Q[state[0], state[1], actions.index(action)] += \
+                learning_rate * (reward + discount_factor * np.max(Q[next_state[0], next_state[1]]) \
+                - Q[state[0], state[1], actions.index(action)])
             state = next_state
+            # if(state == (3,3)):
+                # print("reach!")
     return Q
 
 # Define the policy extraction function
