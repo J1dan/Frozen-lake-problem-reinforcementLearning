@@ -1,8 +1,10 @@
 import numpy as np
+import matplotlib.pyplot as plt
 from libraries.utility import first_visit_monte_carlo_control
 from libraries.utility import sarsa
 from libraries.utility import q_learning
 from libraries.utility import get_policy
+from libraries.utility import evaluate_performance
 
 # Define the state-space and action-space
 # states = [(i, j) for i in range(4) for j in range(4)]
@@ -20,14 +22,37 @@ reward_map[3, 3] = 1
 Q_mc = first_visit_monte_carlo_control(reward_map, actions, 1000, 0.9)
 
 # Train the SARSA with an ε-greedy behavior policy
-Q_sarsa = sarsa(reward_map, actions, 1000, 0.9, 0.1, 0.1)
+Q_sarsa, reward_per_episode_sarsa, accumulated_reward_sarsa = sarsa(reward_map, actions, 2000, 0.9, 0.1, 0.1)
+episodes_sarsa = range(len(reward_per_episode_sarsa))
+actions_sarsa = range(len(accumulated_reward_sarsa))
 
 # Train the Q-learning with an ε-greedy behavior policy
-Q_q = q_learning(reward_map, actions, 1000, 0.9, 0.1, 0.1)
+Q_q, reward_per_episode_q, accumulated_reward_q = q_learning(reward_map, actions, 2000, 0.9, 0.1, 0.1)
+episodes_q = range(len(accumulated_reward_sarsa))
+actions_q = range(len(accumulated_reward_q))
+
+actions = min(len(actions_sarsa),len(actions_q))
+accumulated_reward_sarsa = accumulated_reward_sarsa[:actions]
+accumulated_reward_q = accumulated_reward_q[:actions]
+actions = range(actions)
 
 policy_mc = get_policy(Q_mc)
 policy_sarsa = get_policy(Q_sarsa)
 policy_q = get_policy(Q_q)
+
+# avg_reward = evaluate_performance(reward_map, policy_sarsa, 10)
+# print("Average reward:", avg_reward)
+
 print(policy_mc)
 print(policy_sarsa)
 print(policy_q)
+
+plt.plot(actions, accumulated_reward_sarsa, label = 'Accumulated reward of SARSA')
+plt.plot(actions, accumulated_reward_q, label = 'Accumulated reward of Q-learning')
+plt.xlabel("Actions")
+plt.ylabel("Accumulated reward")
+# plt.title("Episode vs Reward")
+plt.show()
+
+plt.plot(range(len(reward_per_episode_q)), reward_per_episode_q, label = 'Accumulated reward of SARSA')
+plt.show()
