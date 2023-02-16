@@ -22,18 +22,22 @@ reward_map[3, 3] = 1
 Q_mc = first_visit_monte_carlo_control(reward_map, actions, 1000, 0.9)
 
 # Train the SARSA with an ε-greedy behavior policy
-Q_sarsa, reward_per_episode_sarsa, accumulated_reward_sarsa = sarsa(reward_map, actions, 2000, 0.9, 0.1, 0.1)
+Q_sarsa, reward_per_episode_sarsa, accumulated_reward_sarsa = sarsa(reward_map, actions, 1000, 0.9, 0.1, 0.1)
 episodes_sarsa = range(len(reward_per_episode_sarsa))
 actions_sarsa = range(len(accumulated_reward_sarsa))
 
 # Train the Q-learning with an ε-greedy behavior policy
-Q_q, reward_per_episode_q, accumulated_reward_q = q_learning(reward_map, actions, 2000, 0.9, 0.1, 0.1)
+Q_q, reward_per_episode_q, accumulated_reward_q = q_learning(reward_map, actions, 1000, 0.9, 0.1, 0.1)
 episodes_q = range(len(accumulated_reward_sarsa))
 actions_q = range(len(accumulated_reward_q))
 
-actions = min(len(actions_sarsa),len(actions_q))
-accumulated_reward_sarsa = accumulated_reward_sarsa[:actions]
-accumulated_reward_q = accumulated_reward_q[:actions]
+actions = max(len(actions_sarsa),len(actions_q))
+# accumulated_reward_sarsa = accumulated_reward_sarsa[:actions]
+# accumulated_reward_q = accumulated_reward_q[:actions]
+if actions == len(actions_sarsa):
+    accumulated_reward_q.extend([0]*(actions - len(actions_q)))
+else:
+    accumulated_reward_sarsa.extend([0]*(actions - len(actions_sarsa)))
 actions = range(actions)
 
 policy_mc = get_policy(Q_mc)
@@ -47,12 +51,14 @@ print(policy_mc)
 print(policy_sarsa)
 print(policy_q)
 
-plt.plot(actions, accumulated_reward_sarsa, label = 'Accumulated reward of SARSA')
-plt.plot(actions, accumulated_reward_q, label = 'Accumulated reward of Q-learning')
-plt.xlabel("Actions")
-plt.ylabel("Accumulated reward")
-# plt.title("Episode vs Reward")
-plt.show()
+# create subplots
+fig, (ax1, ax2) = plt.subplots(nrows=1, ncols=2)
 
-plt.plot(range(len(reward_per_episode_q)), reward_per_episode_q, label = 'Accumulated reward of SARSA')
+ax1.plot(actions, accumulated_reward_sarsa, label = 'Accumulated reward of SARSA')
+ax1.plot(actions, accumulated_reward_q, label = 'Accumulated reward of Q-learning')
+ax1.legend()
+
+ax2.plot(range(len(reward_per_episode_sarsa)), reward_per_episode_sarsa, label = 'Reward per episode of sarsa')
+ax2.plot(range(len(reward_per_episode_q)), reward_per_episode_q, label = 'Reward per episode of Q-learning')
+ax2.legend()
 plt.show()

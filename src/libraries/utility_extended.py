@@ -1,5 +1,5 @@
 import numpy as np
-
+import time
 
 
 
@@ -9,29 +9,50 @@ def transition(state, action):
     if action == 'up' or action == 0:
         i = max(i-1, 0)
     elif action == 'down' or action == 1:
-        i = min(i+1, 3)
+        i = min(i+1, 9)
     elif action == 'left' or action == 2:
         j = max(j-1, 0)
     elif action == 'right' or action == 3:
-        j = min(j+1, 3)
+        j = min(j+1, 9)
     return (i, j)
 
 # Define the first-visit Monte Carlo control without exploring starts
-def first_visit_monte_carlo_control(reward_map, actions, num_episodes, discount_factor):
-    Q = np.zeros((4, 4, 4))
-    # Q_ = np.zeros((4, 4, 4))
+def first_visit_monte_carlo_control(holes, reward_map, actions, num_episodes, discount_factor, epsilon):
+    Q = 0.1*np.ones((10, 10, 4))
+    # Q_ = 0.1*np.ones((10, 10, 4))
     returns = {}
-    count = np.zeros((4, 4, 4))
+    count = np.zeros((10, 10, 4))
     reward_per_episode = []
     accumulated_reward = 0
     accumulated_reward_50 = 0
     accumulated_reward_list = []
+    danger_list = []
+    start_time = time.time()
     for episode in range(num_episodes):
+        if episode % 100 == 0:
+            print(episode)
         state = (0, 0)
         episode_actions = []
         episode_rewards = []
-        while state != (3, 3) and state !=(1, 1) and state !=(1, 3) and state !=(3, 0) and state !=(2, 3):
-            action = np.random.choice(actions)
+        while state not in holes and state != (9,9):
+            if np.random.rand() < epsilon:
+                action = np.random.choice(actions)  
+
+            elif np.random.rand() < 0.5:
+                for pair in danger_list:
+                    if state == pair[0]:
+                        actions_without_danger = list(actions)
+                        actions_without_danger.remove(pair[1])
+                        action = np.random.choice(actions_without_danger) 
+            else:
+                action = actions[np.argmax(Q[state[0], state[1]])]
+
+            # if np.random.rand() < epsilon:
+            #     action = np.random.choice(actions)      
+            # else:
+            #     # print([np.argmax(Q[state[0], state[1]])])
+            #     action = actions[np.argmax(Q[state[0], state[1]])]
+
             next_state = transition(state, action)
             reward = reward_map[next_state[0], next_state[1]]
             accumulated_reward += reward
@@ -40,6 +61,11 @@ def first_visit_monte_carlo_control(reward_map, actions, num_episodes, discount_
             episode_actions.append((state, action))
             episode_rewards.append(reward)
             state = next_state
+            if state in holes:
+                if episode_actions[-1] not in danger_list:
+                    danger_list.append(episode_actions[-1])
+            if state == (9,9):
+                print("Goal")
         G = 0
         if (episode+1)%50 == 0:
             reward_per_episode.append(accumulated_reward_50/50)
@@ -52,23 +78,27 @@ def first_visit_monte_carlo_control(reward_map, actions, num_episodes, discount_
                 if (state, action) not in returns:
                     returns[(state, action)] = []
                 returns[(state, action)].append(G)
-                Q[state[0], state[1], actions.index(action)] = Q[state[0], state[1], actions.index(action)]\
-                + (G - Q[state[0], state[1], actions.index(action)]) / count[state[0], state[1], actions.index(action)]
+                # Q[state[0], state[1], actions.index(action)] = np.mean(returns[(state, action)])
+                
+                Q[state[0], state[1], actions.index(action)] += (G - Q[state[0], state[1], actions.index(action)]) / count[state[0], state[1], actions.index(action)]
             else:
                 count[state[0], state[1], actions.index(action)] -= 1
-    return Q, reward_per_episode, accumulated_reward_list
+        end_time = time.time()
+        processing_time = end_time - start_time
+    return Q, reward_per_episode, accumulated_reward_list, processing_time
 
 # Define the SARSA with an ε-greedy behavior policy
-def sarsa(reward_map, actions, num_episodes, discount_factor, learning_rate, epsilon):
-    Q = 0.1*np.ones((4, 4, 4))
-    # Q = np.zeros((4, 4, 4))
+def sarsa(holes, reward_map, actions, num_episodes, discount_factor, learning_rate, epsilon):
+    Q = 0.1*np.ones((10, 10, 4))
+    # Q = np.zeros((10, 10, 4))
     reward_per_episode = []
     accumulated_reward = 0
     accumulated_reward_50 = 0
     accumulated_reward_list = []
+    start_time = time.time()
     for episode in range(num_episodes):
         state = (0, 0)
-        while state != (3, 3) and state !=(1, 1) and state !=(1, 3) and state !=(3, 0) and state !=(2, 3):
+        while state not in holes and state != (9,9):
             if np.random.rand() < epsilon:
                 action = np.random.choice(actions)
             else:
@@ -89,29 +119,25 @@ def sarsa(reward_map, actions, num_episodes, discount_factor, learning_rate, eps
         if (episode+1)%50 == 0:
             reward_per_episode.append(accumulated_reward_50/50)
             accumulated_reward_50 = 0
-    # print(reward_per_episode)
-    return Q, reward_per_episode, accumulated_reward_list
+    end_time = time.time() 
+    processing_time = end_time - start_time
+
+    return Q, reward_per_episode, accumulated_reward_list, processing_time
 
 # Define the Q-learning with an ε-greedy behavior policy
-def q_learning(reward_map, actions, num_episodes, discount_factor, learning_rate, epsilon):
-    Q = 0.1*np.ones ((4, 4, 4))
-    # Q = np.zeros((4, 4, 4))
+def q_learning(holes, reward_map, actions, num_episodes, discount_factor, learning_rate, epsilon):
+    Q = 0.1*np.ones ((10, 10, 4))
+    # Q = np.zeros((10, 10, 4))
     reward_per_episode = []
     accumulated_reward = 0
     accumulated_reward_50 = 0
     accumulated_reward_list = []
+    start_time = time.time()
     for episode in range(num_episodes):
         state = (0, 0)
-        while state != (3, 3) and state !=(1, 1) and state !=(1, 3) and state !=(3, 0) and state !=(2, 3):
+        while state not in holes and state != (9,9):
             if np.random.rand() < epsilon:
                 action = np.random.choice(actions)
-            # else:
-            #     if np.allclose(Q[state[0], state[1]],Q[state[0],state[1],0]):
-            #         if np.random.rand() < 0.5:
-            #             action = 'right'
-            #         else:
-            #             action = 'down'
-            #         # action = np.random.choice(actions)
             else:
                 action = actions[np.argmax(Q[state[0], state[1]])]
             next_state = transition(state, action)
@@ -126,13 +152,15 @@ def q_learning(reward_map, actions, num_episodes, discount_factor, learning_rate
         if (episode+1)%50 == 0:
             reward_per_episode.append(accumulated_reward_50/50)
             accumulated_reward_50 = 0
-    return Q, reward_per_episode, accumulated_reward_list
+    end_time = time.time()
+    processing_time = end_time - start_time
+    return Q, reward_per_episode, accumulated_reward_list, processing_time
 
 # Define the policy extraction function
 def get_policy(holes, Q):
-    policy = np.zeros((4, 4), dtype=int)
-    for i in range(4):
-        for j in range(4):
+    policy = np.zeros((10, 10), dtype=int)
+    for i in range(10):
+        for j in range(10):
             policy[i, j] = np.argmax(Q[i, j])
     for hole in holes:
         policy[hole] = -1
