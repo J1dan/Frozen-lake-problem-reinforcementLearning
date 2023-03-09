@@ -24,19 +24,16 @@ method = 'combined' # Options: 'None', 'randomArgmax', 'q_reset', 'combined'
 # Train the Monte Carlo first-visit control
 Q_mc, reward_per_episode_mc, accumulated_reward_mc, time_mc, convergingEpisode_mc, convergingAction_mc =\
      first_visit_monte_carlo_control(holes, reward_map, actions, 5000, 0.9, 0.1, method=method)
-episodes_mc = range(len(reward_per_episode_mc))
 actions_mc = range(len(accumulated_reward_mc))
 
 # Train the SARSA with an ε-greedy behavior policy
 Q_sarsa, reward_per_episode_sarsa, accumulated_reward_sarsa, time_sarsa, convergingEpisode_sarsa, convergingAction_sarsa =\
      sarsa(holes, reward_map, actions, 5000, 0.9, 0.1, 0.1, method=method)
-episodes_sarsa = range(len(reward_per_episode_sarsa))
 actions_sarsa = range(len(accumulated_reward_sarsa))
 
 # Train the Q-learning with an ε-greedy behavior policy
 Q_q, reward_per_episode_q, accumulated_reward_q, time_q, convergingEpisode_q, convergingAction_q =\
      q_learning(holes, reward_map, actions, 5000, 0.9, 0.1, 0.1, method=method)
-episodes_q = range(len(accumulated_reward_sarsa))
 actions_q = range(len(accumulated_reward_q))
 
 # To align the three arrays with different lengths for visualization, expand those that are shorter with 0.
@@ -65,15 +62,12 @@ arrow_policy_q = vis_policy(policy_q)
 
 print(arrow_policy_mc)
 print(f"Processing time for First-visit Monte Carlo Control: {time_mc}")
-print(f"Number of episode to converge for MC: {episodes_mc}")
 
 print(arrow_policy_sarsa)
 print(f"Processing time for SARSA: {time_sarsa}")
-print(f"Number of episode to converge for SARSA: {episodes_sarsa}")
 
 print(arrow_policy_q)
 print(f"Processing time for Q-learning: {time_q}")
-print(f"Number of episode to converge for Q: {episodes_q}")
 
 # Plot the results
 fig, (ax1, ax2) = plt.subplots(nrows=1, ncols=2)
