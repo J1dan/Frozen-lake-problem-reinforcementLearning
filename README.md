@@ -6,9 +6,14 @@
 * pandas (for batch test)
 
 ## Usage
-1. Install the required libraries using pip
+1. Clone the repository
+   ```bash
+   git clone https://github.com/J1dan/RL.git
+   ```
 
-2. Run the python file in the folders
+2. Install the required libraries using pip
+
+3. Run the python file in the folders
 
    ```bash
    python main_task1.py
@@ -27,3 +32,5 @@
    ```bash
    python batch_test_task2.py
    ```
+
+## Demonstration
