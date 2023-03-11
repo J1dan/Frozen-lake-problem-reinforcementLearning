@@ -9,7 +9,7 @@ This is a project for NUS ME5406. A frozen lake problem is considered to impleme
 ## Usage
 1. Clone the repository
    ```bash
-   git clone https://github.com/J1dan/RL.git
+   git clone https://github.com/J1dan/Frozen-lake-problem-reinforcementLearning.git
    ```
 
 2. Install the required libraries using pip
