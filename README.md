@@ -45,4 +45,4 @@ Q-learning with method 'exploringStart'
 ### Learning curve
 <img src="Examples/es.png" width="600"/>
 
-Cumulative and average reward of three algorithms with method 'exploringStart'
+Cumulative and average reward of three algorithms with method 'exploringStart' (Cumulative reward goes zero once the training ends)
