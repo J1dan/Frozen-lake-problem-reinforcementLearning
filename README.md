@@ -1,5 +1,5 @@
-# Project I for ME5406 Deep Learning for Robotics: Frozen Lake Problem and Its Variation
-This is a project for NUS ME5406. A frozen lake problem is considered to implement three reinforcement learning algorithms, first-visit Monte Carlo Control without exploring starts, SARSA and Q-learning, both with an $\epsilon$-greedy behavior policy, all from the ground up. Parameters could be tuned in the code, while the **method** augument could be specified with command in the terminal.
+# Project I for ME5406 Deep Learning for Robotics: Frozen Lake Problem
+This is a project for NUS ME5406. A frozen lake problem is considered to implement three reinforcement learning algorithms, first-visit Monte Carlo Control without exploring starts, SARSA and Q-learning, both with an $\epsilon$-greedy behavior policy, all from the ground up. Parameters could be tuned in the code, while the **method** augument could be specified with command in the terminal. Task1 is with a 4x4 grid, while task2 with a 10x10 grid.
 
 ## Dependencies
 * matplotlib
