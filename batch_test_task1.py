@@ -4,6 +4,14 @@ from libraries.utility import sarsa
 from libraries.utility import q_learning
 import pandas as pd
 import os
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--method', type=str, default='combined', help="Options: 'None', 'randomArgmax', 'q_reset', 'combined'")
+args = parser.parse_args()
+
+method = args.method # You can customize here. Options: 'None', 'randomArgmax', 'q_reset', 'combined'
+
 # Define the state-space and action-space
 # states = [(i, j) for i in range(4) for j in range(4)]
 actions = ['up', 'down', 'left', 'right']
@@ -29,9 +37,6 @@ convergingEpisode_q_total = 0
 convergingAction_mc_total = 0
 convergingAction_sarsa_total = 0
 convergingAction_q_total = 0
-
-#Options: 'None', 'randomArgmax', 'q_reset', 'combined'
-method = 'randomArgmax'
 
 time = 30
 episode = 10000

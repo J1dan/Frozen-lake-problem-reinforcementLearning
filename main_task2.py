@@ -5,6 +5,13 @@ from libraries.utility_extended import sarsa
 from libraries.utility_extended import q_learning
 from libraries.utility_extended import get_policy
 from libraries.utility_extended import vis_policy
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--method', type=str, default='exploringStart', help="Options: 'None', 'randomArgmax', 'q_reset', 'combined', 'dangerAvoidance', 'exploringStart'")
+args = parser.parse_args()
+
+method = args.method # You can customize here. Options: 'None', 'randomArgmax', 'q_reset', 'combined', 'dangerAvoidance', 'exploringStart'
 
 # Define the action-space
 actions = ['up', 'down', 'left', 'right']
@@ -16,8 +23,6 @@ reward_map = np.zeros((10, 10))
 for r, c in holes:
     reward_map[r, c] = -1
 reward_map[9, 9] = 1 # Reward of the goal is 1
-
-method = 'q_reset' # 'None', 'randomArgmax', 'q_reset', 'combined', 'dangerAvoidance', 'exploringStart'
 
 # Train the Monte Carlo first-visit control
 Q_mc, reward_per_episode_mc, accumulated_reward_mc, time_mc, convergingEpisode_mc, convergingAction_mc =\

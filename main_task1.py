@@ -6,6 +6,13 @@ from libraries.utility import q_learning
 from libraries.utility import get_policy
 from libraries.utility import vis_policy
 from libraries.utility import evaluate_performance
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--method', type=str, default='combined', help="Options: 'None', 'randomArgmax', 'q_reset', 'combined'")
+args = parser.parse_args()
+
+method = args.method # You can customize here
 
 # Define the action-space
 actions = ['up', 'down', 'left', 'right']
@@ -19,7 +26,7 @@ for r, c in holes:
     reward_map[r, c] = -1
 reward_map[3, 3] = 1
 
-method = 'combined' # Options: 'None', 'randomArgmax', 'q_reset', 'combined'
+# method = 'combined' # Options: 'None', 'randomArgmax', 'q_reset', 'combined'
 
 # Train the Monte Carlo first-visit control
 Q_mc, reward_per_episode_mc, accumulated_reward_mc, time_mc, convergingEpisode_mc, convergingAction_mc =\
